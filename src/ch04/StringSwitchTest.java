@@ -2,6 +2,7 @@ package ch04;
 
 /**
  * Created by YouZeng on 2015-02-13.
+ * Switch支持字符串判断
  */
 public class StringSwitchTest {
     public static void main(String[] args) {
