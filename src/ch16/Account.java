@@ -6,6 +6,10 @@ package ch16;
 public class Account {
     private String accountNo;
     private double balance;
+
+    //标识账户中是否已有存款的旗标
+    private boolean flag = false;
+
     public Account(String accountNo, double balance) {
         this.accountNo = accountNo;
         this.balance = balance;
@@ -34,6 +38,42 @@ public class Account {
             System.out.println("\t余额：" + balance);
         } else {
             System.out.println(Thread.currentThread().getName() + "取钱失败！余额不足。");
+        }
+    }
+
+    public synchronized void drawMoney(double drawAmount){
+        try {
+            //如果flag为假，表名账户中还没有人存钱进去，取钱方法阻塞
+            if(!flag){
+                wait();
+            }else{
+                //执行取钱操作
+                System.out.println(Thread.currentThread().getName() + " 取钱：" + drawAmount);
+                balance -= drawAmount;
+                System.out.println("账户余额为：" + balance);
+                flag = false;
+                //唤醒其他线程
+                notifyAll();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public synchronized void deposit(double depositAmount){
+        try {
+            if(flag){
+                wait();
+            }else{
+                //执行存款操作
+                System.out.println(Thread.currentThread().getName() + " 存款：" + depositAmount);
+                balance += depositAmount;
+                System.out.println("账户余额为：" + balance);
+                flag = true;
+                notifyAll();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
